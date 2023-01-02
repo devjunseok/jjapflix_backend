@@ -44,19 +44,19 @@ S.A 링크 : [B-1팀 영화추천서비스](https://iodized-justice-c7c.notion.
 
 ### 노우석 - [WooSeok-Nho - Overview](https://github.com/WooSeok-Nho/)
 
-팀원 / 프로젝트 기획 / user기능 / 날씨추천기능 / 포인트적립기능 / FrontEnd 제작,API연결
+팀원 / 프로젝트 기획 / 검색기능 추가 / API연결을 위한 각종 조회 로직 작성 / 영화리뷰작성기능추가
 
 ### 성창남 - [SungChangNam - Overview](https://github.com/SungChangNam)
 
-팀원 / 프로젝트 기획 / communities 기능/ DB 모델링 / FrontEnd 제작,API연결
+팀원 / 프론트엔드 회원가입 / 로그인 / 리뷰업로드
 
 ### 양기철 - [hanmariyang - Overview](https://github.com/hanmariyang)
 
-팀원 / 프로젝트 기획 / products, recommend 기능 / 상품정보 크롤링 / DB모델링 / 추천 서비스 기능 / FrontEnd 템플릿 제작 및 API연결
+팀원 / 프로젝트 기획 / contents 기능 / DB 모델링 / 프론트엔드 API 연결 / TMDB_API 연결 및 영화 DB 저장
 
 ### 이태겸 - [poro625 - Overview](https://github.com/poro625)
 
-팀원 / 프로젝트 기획 / communites 기능, products 기능, weather 기능/크롤링/ DB 모델링 /태그 기능/ 검색 기능/상세보기 수정 및 삭제
+팀원 / 회원가입 및 로그인 관리 구축 / csv파일 생성 / 추천시스템 구축/ API 연결
 
 ## 4. 프로젝트 기능
 
@@ -91,32 +91,28 @@ S.A 링크 : [B-1팀 영화추천서비스](https://iodized-justice-c7c.notion.
 
 ### 양기철
 
-**문제 : Serializer를 사용하지않고 ManyToMany 필드를 사용하는 대량 DB 저장시 각 필드끼리 연결되지 않는 문제 발생**
+**문제 : TMDB 영화 데이터를 가져오면서 작성했던 tmdb_api.py 사용시 모듈을 찾을 수 없다고 에러가 발생 하였다.**
 
-**원인 : 크롤링한 외부 데이터를 가져와서 DB에 저장시키려다보니 각각 알맞는 필드를 연결시키지 못함**
-
-**해결 : ManyToMany 필드에 맞는 로직으로 저장하여 해결**
+**해결 : 장고 프로젝트에서 명시된 app에 파일이 아니기때문에 별도로 장고 셋업을 import 해줘야하는데 이 경우에 .env 파일을 사용하고있으면 django.setup() 아래에 import dotenv 도 같이 해줌으로서 해결 하였다.**
 ### 노우석
 
-**문제 : 출석버튼을 눌렀을 때 db에 저장되어 있는 point가 증가하게 설계해놓았다.**
+**문제 : 검색기능을 작성하던 도중 카테고리 필드가 검색이 되지 않음**
 
-**다만 코드 로직 자체를 하루에 한번 포인트가 증가하게 할 수 있게 datetime.today()와 버튼을 클릭했을 때의 현재 날짜를 저장하는 click_time의 값을 비교해서 값이 같으면 기능이 작동하지 않게 작성해놓았는데 제대로 작동하지 않는 상황 발생**
+**원인 : 검색기능을 사용하는 django search_fields에서는 manytomany필드 일 경우 __를 붙여주고 필드안에 name같이 원하는 부분을 지정해줘야 했다**
 
-**해결 : 두개의 값이 완전히 같게 보여도 타입이 달랐기 때문에 타입을 모델에서 변경해주어 같게 만들어주었더니 해결.**
+**해결 : search_fields = ['title','description','category__name'] 으로 바꿔주니 제대로 카테고리 이름을 검색할 수 있었다.**
 
 ### 이태겸
 
-**문제 : 태그 기능을 게시글에 작성 시 여러개를 저장하더라도 각각 DB에 저장이 되도록 해야 하는데 각각 저장이 되지 않는 상황 발생**
+**문제 : 천 시스템을 구축 시 기존에 csv파일을 가지고는 로그인 후 사용자에게 추천할 수 있는 임의의 데이터가 없음**
 
-**원인 : 원인은 Serializer 사용 시 ManyToMany 관계를 의식하지 않고 태그 기능을 구현하였기 때문에 생긴 현상.**
-
-**해결 :ManyToMany 관계 Serializer를 사용하여 기존 Serializer를 수정 보완하여서 해결**
+**해결 :가상의 데이터를 하나 구축하여 API 데이터를 가지고 온 것과 병합 시켜서 추천 시스템을 구축함**
 
 ### 성창남
 
-**문제 : 연동 하여 관리자가 신고 게시글 삭제 기능 구현 할 때 백엔드 정보가 프로트엔드에 구현되지 않은 오류가 발생 하는 문제가 발생. 처음에는 await fetch 만 사용 하여 원치않는 정보도 같이 들어와서 오류 발생.**
+**문제 : 영화 리뷰 작성시 평점이 보이지 않는 문제가 발생하였다.**
 
-**해결 : 이중 반복문 을 활용하여 해결.**
+**해결 : ForEach 를 사용하여 const newRating = document.createElement(“div”); 추가하여 문제해결하였다.**
 
 
 ## 5. 와이어프레임
